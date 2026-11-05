@@ -1,0 +1,21 @@
+# Tema escuro do dashboard (mesma paleta e fontes do dashboard de vendas)
+[theme]
+base = "dark"
+primaryColor = "#3ecf6e"
+backgroundColor = "#0c1810"
+secondaryBackgroundColor = "#141f17"
+textColor = "#dff0e4"
+borderColor = "#1d2f20"
+font = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap"
+headingFont = "'Playfair Display':https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap"
+baseRadius = "small"
+
+[theme.sidebar]
+backgroundColor = "#101e14"
+secondaryBackgroundColor = "#141f17"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false

@@ -1,7 +1,14 @@
+# segredos e dados reais
 .env
 .streamlit/secrets.toml
+fornecedores_frete.csv
 dados/
+*.log
+# planilhas e CSVs reais ficam fora; os fictícios da demo entram
 *.xlsx
 *.csv
+!demo/*.csv
+!demo/*.xlsx
+!fornecedores_frete_exemplo.csv
 __pycache__/
 venv/

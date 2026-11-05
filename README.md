@@ -2,45 +2,67 @@
 
 🇧🇷 Português | [🇺🇸 English](README.en.md)
 
-Painel em Streamlit que reúne, em tempo de execução, as solicitações e cotações de frete do **Pipefy**, os dados de faturamento e de gasto com transportadoras do **SAP S/4HANA** e as distâncias das rotas (**OpenStreetMap + OSRM**), para acompanhar custo, saving, eficiência e prazos do transporte.
+**▶️ [Abrir a demonstração](https://joao-2003.github.io/logistics-freight-dashboard/)**: o próprio app Streamlit rodando no navegador (Pyodide + stlite), com dados fictícios. Não precisa instalar nada; a primeira carga leva de 20 a 60 segundos.
 
-> Desenvolvido por mim para a área de Logística de uma indústria brasileira. Credenciais, IDs de pipe, nomes de transportadoras autônomas e unidades foram removidos ou trocados por exemplos.
+Painel em Streamlit que reúne as solicitações e cotações de frete do **Pipefy**, as notas fiscais, os CT-e e os pagamentos do **SAP S/4HANA** e as distâncias das rotas (**OpenStreetMap + OSRM**), para acompanhar quanto a empresa gasta com frete, com quem, para onde e com que eficiência.
 
-## Fluxo de dados
+> Desenvolvido por mim para a área de Logística de uma indústria brasileira e usado em produção. Este repositório traz o código sem credenciais, IDs, nomes de unidades, transportadoras ou pessoas reais; a demonstração usa dados inventados por `tools/gerar_dados_demo.py`.
 
-1. **Pipefy (GraphQL, paginado):** solicitações de frete, cotações aprovadas e rejeitadas e centros de custo.
-2. **SAP S/4HANA (OData):** peso bruto e volumes da nota fiscal de cada pedido, e o gasto líquido pago às transportadoras.
-3. **Motor de distâncias:** Nominatim converte cidade e UF em coordenadas e o OSRM devolve a distância de estrada; cada rota calculada vai para um cache local em Excel, então o painel fica mais rápido a cada uso e respeita o limite das APIs gratuitas.
-4. **Cruzamento em memória:** Pipefy × SAP pelo número do pedido normalizado, e solicitações × cotações × distâncias.
+![Resumo](docs/resumo.png)
 
-## Abas
+## O que mostra
 
-| Aba | O que mostra |
+| Aba | Conteúdo |
 |---|---|
-| Resumo | Volume de solicitações, evolução diária, solicitantes e tipos de frete |
-| Vendas e Compras | Fretes de saída e de entrada: valor, modalidade, clientes ou fornecedores e estados |
-| Filial e Fábrica | Transferências entre unidades e principais fluxos |
+| Resumo Geral | Solicitações, solicitantes, frota usada e **Total Gasto com Frete** pago no SAP, separado em transportadoras, autônomos, mudanças e internacional |
+| Vendas · Compras | Valor da remessa, frete pago (CT-e) e % do frete sobre a remessa; modalidade, clientes, fornecedores, cidades e UFs |
+| Filial & Fábrica | Transferências entre unidades, envios para a fábrica e devoluções comerciais, com os principais fluxos |
 | Marketing | Envios de material promocional, frota própria × terceiros |
-| Cotações | Saving frente às cotações rejeitadas, desvio entre CT-e cobrado e cotação aprovada (verde, amarelo, vermelho) e R$/km por transportadora |
-| Peso/Vol | Eficiência por R$/kg·km e R$/volume·km, com filtros para dados mal preenchidos |
-| SLAs | Cards parados por fase, tempo médio por etapa e fretes fora do prazo |
-| Centro de custo | Rateio do uso da frota própria entre os setores |
+| Cotações | Frete/remessa, saving (maior cotação − selecionada), desvio do CT-e cobrado sobre a cotação (verde, amarelo, vermelho) e ranking por R$/km |
+| Transportadoras por Estado | Mapa do Brasil com a principal transportadora de cada UF por 5 critérios (peso, notas, frete pago, menor R$/kg e CT-e do SAP); passar o mouse mostra a líder, clicar abre a lista completa |
+| Peso/Vol | Custo por kg·km e por volume·km, por transportadora e tipo de volume |
+| SLAs | Cards parados por fase, tempo médio em cada etapa e cards vencidos |
 
-Limpeza de dados embutida: nomes de transportadoras padronizados, valores digitados com pontos e vírgulas misturados convertidos e códigos de cotação saneados antes do cruzamento.
+![Transportadoras por estado](docs/mapa.png)
+
+## Como os dados se juntam
+
+1. **Pipefy (GraphQL, paginado):** cards de solicitação de frete e a tabela de cotações. Dois campos com o mesmo rótulo ("Valor da Remessa:" do formulário inicial e "Valor da remessa" de uma fase) são unidos em vez de um sobrescrever o outro; foi isso que zerava os KPIs de compras, filial e fábrica.
+2. **SAP S/4HANA (OData v2 e v4, paginado com novas tentativas):** faturamento (peso e volumes por pedido), partidas de fornecedor (pagamentos, chave 25) e o relatório de frete (notas e CT-e com parceiro e UF).
+3. **Total gasto com frete:** soma os pagamentos aos fornecedores de uma lista com categoria (`fornecedores_frete_exemplo.csv`). A regra antiga, por nome parecido com "transporte", somava quem não era frete e deixava de fora motoristas autônomos.
+4. **Motor de distâncias (`motor_distancias.py`):** Nominatim converte cidade e UF em coordenadas e o OSRM devolve a distância de estrada, com cache em Excel. Só sucessos ficam guardados, as unidades da empresa têm coordenadas fixas e, se a API pedir para parar (403/429), a rodada para e continua na próxima. `atualizar_distancias.py` roda todo dia por um timer, sem depender de alguém abrir o painel.
+
+## Demonstração
+
+Sem credenciais, o painel entra sozinho no modo demonstração e lê a pasta `demo/`. No navegador, o botão **Calcular distâncias pendentes** usa o mesmo motor, só que sem rede: as coordenadas vêm de `demo/cidades.csv` e a distância de estrada é a linha reta × 1,27.
+
+```bash
+python tools/gerar_dados_demo.py   # recria os dados fictícios
+```
 
 ## Como executar
 
 ```bash
 pip install -r requirements.txt
-cp .env.example .env    # preencha e exporte as variáveis (ex.: set -a; source .env; set +a)
-streamlit run Dashboard_.py
+cp .streamlit/secrets.toml.example .streamlit/secrets.toml   # preencha (ou deixe vazio para a demo)
+streamlit run Dashboard.py
+python atualizar_distancias.py                                # rodada diária das distâncias
 ```
 
-`calcular_distancias.py` recalcula o cache de distâncias em lote e `teste_APIs.py` testa as APIs de geolocalização.
+## Arquivos
+
+| Arquivo | Função |
+|---|---|
+| `Dashboard.py` | O painel (abas, KPIs, gráficos e tema escuro) |
+| `fontes.py` | Leitura do Pipefy e do SAP, limpeza de nomes e números, modo demonstração |
+| `motor_distancias.py`, `atualizar_distancias.py` | Distâncias por rota e a rodada diária |
+| `mapa_estados.py`, `mapa_brasil.json` | Aba Transportadoras por Estado (SVG do Brasil + JS) |
+| `config.py` | Credenciais, caminhos, unidades com coordenadas e agrupamento de nomes de transportadoras |
+| `index.html` | Página da demonstração (stlite) |
 
 ## Tecnologias
 
-Python 3 · Streamlit · pandas · Plotly · requests · Pipefy GraphQL · SAP S/4HANA OData · OpenStreetMap Nominatim · OSRM · ViaCEP
+Python 3 · Streamlit · pandas · Plotly · requests · Pipefy GraphQL · SAP S/4HANA OData · OpenStreetMap Nominatim · OSRM · stlite/Pyodide · systemd timer
 
 ## Autor
 

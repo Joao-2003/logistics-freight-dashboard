@@ -1,0 +1,20 @@
+﻿Supplier;Nome_SAP;Categoria;Nome_exibicao;Observacao
+2000101;RODOVIA EXPRESS LTDA;Transportadora;Rodovia Express;
+2000102;TRANSLESTE CARGAS LTDA;Transportadora;Transleste Cargas;
+2000103;ALFA SUL TRANSPORTES LTDA;Transportadora;Alfa Sul Transportes;
+2000104;CERRADO CARGAS E ENCOMENDAS;Transportadora;Cerrado Cargas;
+2000105;SERRA AZUL TRANSPORTES;Transportadora;Serra Azul Transportes;
+2000106;NORTE RAPIDO LOGISTICA;Transportadora;Norte Rápido Logistica;
+2000107;PAMPA LOG TRANSPORTES;Transportadora;Pampa Log Transportes;
+2000108;VALE LOG TRANSPORTES;Transportadora;Vale Log Transportes;
+2000109;ROTA CENTRAL CARGAS;Transportadora;Rota Central Cargas;
+2000110;ECO ENTREGAS EXPRESSAS;Transportadora;Eco Entregas Expressas;
+2000201;AUTONOMO A;Autônomo;Autônomo A;
+2000202;AUTONOMO B;Autônomo;Autônomo B;
+2000203;AUTONOMO C;Autônomo;Autônomo C;
+2000301;MUDANÇAS BOA VIAGEM LTDA;Mudança;Mudanças Boa Viagem;mudanças de colaboradores
+2000401;GLOBAL EXPRESS COURIER LTDA;Internacional;Global Express;courier de amostras
+2000501;TRADING EXEMPLO COMERCIO EXTERIOR LTDA;Fora: comércio exterior;Trading Exemplo;numerário de importação: impostos e mercadoria, não só frete
+2000502;LOCADORA DE VEICULOS EXEMPLO S.A.;Fora: não é frete;Locadora Exemplo;aluguel de veículos
+2000503;EMPRESA DO GRUPO EXEMPLO S.A.;Fora: intragrupo;Empresa do grupo;transferência entre empresas do grupo
+2000601;J. M. TRANSPORTES ME;Revisar;J. M. Transportes;MEI: confirmar se é frete
